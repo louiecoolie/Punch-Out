@@ -13,9 +13,9 @@ local flipper = require(util:WaitForChild("Flipper"))
 local spring = flipper.Spring
 --components
 local components = script.Components
-local context = require(components:FindFirstChild("Context"))
-local gameHud = require(components:FindFirstChild("Hud"))
-local gameShop = require(components:FindFirstChild("Shop"))
+local context = require(components:FindFirstChild("Context")) --responsible for theme
+local gameHud = require(components:FindFirstChild("Hud")) -- responsible for information display
+local gameShop = require(components:FindFirstChild("Shop")) -- responsible for shop
 
 local BaseApp = roact.Component:extend("BaseApp")
 
@@ -24,7 +24,6 @@ local BaseApp = roact.Component:extend("BaseApp")
 local function mapStateToProps(state)
 
     return {
-        open = state.playerHandler.Lobby.currentOpen;
         themeType = state.playerHandler.Theme.Current;
     }
 end
@@ -56,6 +55,7 @@ end
 
 function BaseApp:render()
     -- creating hud component which will have coins and power
+    --context.with will wrap these components with the theme.
     local hud = context.with(function(theme)
         return roact.createElement(gameHud, {
             theme = theme;
@@ -92,5 +92,5 @@ function BaseApp:willUnmount()
    
 end
 
-
+--roactrodux will connect the app to state for updates.
 return roactRodux.connect(mapStateToProps, mapDispatchToProps)(BaseApp)

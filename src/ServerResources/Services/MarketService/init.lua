@@ -1,14 +1,11 @@
 
 -- service is responsible for networking and processing market place requests.
-
 local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local MarketplaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")
-
 -- modules
 local util = ReplicatedStorage.Vendor
-
 --modules 
 local rodux = require(util:WaitForChild("Rodux"))
 local roactRodux = require(util:WaitForChild("Roact-Rodux"))

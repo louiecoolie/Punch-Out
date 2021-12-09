@@ -2,7 +2,6 @@
     User facing component shop that will take in input and submit requests to the server for purchases as well
     as calculate the costs to user
 ]]--
-
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 --modules
 local util = ReplicatedStorage.Vendor
@@ -12,11 +11,8 @@ local roact = require(util:WaitForChild("Roact"))
 local flipper = require(util:WaitForChild("Flipper"))
 local spring = flipper.Spring
 
-
 local Shop = roact.Component:extend("Shop")
-
 --animations
-
 local TWEEN_IN_SPRING = {
     frequency = 5,
     dampingRatio = 1
@@ -34,24 +30,19 @@ end
 
 local function mapDispatchToProps(dispatch)
     return {
-
     }
 end
 
 -- component methods
+--this will calculate the cost of an upgrade based on player level
 local function calculateCost(powerLevel)
     local result = (0.2*math.exp(powerLevel)) * 10
     return math.floor(result)
 end
-
+-- calculates power gained based on powerlevel
 local function calculatePower(powerLevel)
     local result = (0.37*math.exp(powerLevel)) * 10
     return math.floor(result)
-end
-
-
-function Shop:init()
-
 end
 
 function Shop:render()
@@ -59,7 +50,7 @@ function Shop:render()
     local theme = self.props.theme;
 
 
-
+    -- this will create a rounded frame with a button to purchase and button to close with some text labels to give context to the interface
     return roact.createElement("Frame",{
         Size = UDim2.fromScale(0.4,0.4);
         Position = UDim2.fromScale(0.3,0.3);
@@ -79,12 +70,13 @@ function Shop:render()
             TextColor3 = theme.text;
             BackgroundTransparency = 1;
         });
+        -- this defines the close button element
         Close = roact.createElement("TextButton",{
             Size = UDim2.fromScale(0.1,0.1);
             Position = UDim2.fromScale(0.85,0.05);
             BackgroundColor3 = theme.background;
             Text = "";
-            [roact.Event.Activated] = function()
+            [roact.Event.Activated] = function() -- when button is pressed send server request to toggle shop
                 self.props.serverDispatch:FireServer({
                     type = "Shop"
                 })
@@ -110,6 +102,7 @@ function Shop:render()
 
             })
         }),
+        --this defines the cost description for upgrade
         CostPower = roact.createElement("TextLabel",{
             Size = UDim2.fromScale(0.3,0.3);
             Position = UDim2.fromScale(0.35, 0.3);
@@ -119,12 +112,13 @@ function Shop:render()
             TextScaled = true;
             Text = "Cost to upgrade.."..calculateCost(self.props.powerLevel+1);
         }),
+        -- defines the purchase button
         BuyPower = roact.createElement("TextButton",{
             Size = UDim2.fromScale(0.3,0.3);
             Position = UDim2.fromScale(0.35,0.6);
             BackgroundColor3 = theme.background;
             Text = "";
-            [roact.Event.Activated] = function()
+            [roact.Event.Activated] = function() -- when the button is pressed send a request to server for purchase
                 self.props.serverDispatch:FireServer({
                     type = "PurchasePower"
                 })
@@ -140,6 +134,7 @@ function Shop:render()
                 SortOrder = Enum.SortOrder.LayoutOrder;
                 FillDirection = Enum.FillDirection.Horizontal;
             }),
+            --text that gives context to the purchase button
             Description = roact.createElement("TextLabel",{
                 Text = "Upgrade Power: ";
                 Size = UDim2.fromScale(0.4,1);
@@ -150,6 +145,7 @@ function Shop:render()
                 LayoutOrder = 1;
 
             }),
+            --shows prospective upgrade cost
             Value = roact.createElement("Frame",{
                 Size = UDim2.fromScale(0.3,.7);
                 LayoutOrder = 2;
@@ -176,16 +172,7 @@ function Shop:render()
     })
 
 end
-
-function Shop:didMount()
-
-end
-
-function Shop:willUnmount()
-
-
-end
-
+-- roactrodux connects this component to the state for updates.
 return roactRodux.connect(mapStateToProps, mapDispatchToProps)(Shop)
 
 

@@ -11,7 +11,12 @@ local function copy(list)
 	end
 	return copy
 end
-
+--[[
+    Profile: Initial state for a profile if the server doesn't provide information or new player
+    GameData: used to show the data of other players if needed
+    Shop: state to toggle shop visibility
+    Theme: theme of the app  
+]]--
 return rodux.createReducer({
     Profile = {
         coins = 0;
@@ -21,21 +26,17 @@ return rodux.createReducer({
     GameData = {
         Players = {};
     };
-    Lobby = {
-        currentOpen = "PLAY"
-    };
-    Settings = {
-        Navigation = {
-            tabRight = {Enum.KeyCode.A, Enum.KeyCode.ButtonR1};
-            tabLeft = {Enum.KeyCode.D, Enum.KeyCode.ButtonL1};
-        }
-    };
     Shop = false;
     Theme = {
         Current = "darkTheme"
     };
-    Active = false;
 },{
+    --[[
+        Coins:  action to update coin count
+        Power: action to update power count and level
+        Profile: action to receive profile sent from server
+        Shop: action to toggle shop
+    ]]--
     Coins = function(state, action)
         local newState = copy(state)
       
@@ -65,24 +66,5 @@ return rodux.createReducer({
         newState.Shop = not(state.Shop)
         
         return newState
-    end,
-    AddTeam = function(state, action)
-        local newState = copy(state)
-        newState.GameData = copy(state.GameData)
-
-        newState.GameData.Players[#newState.GameData.Players+1] = action.player
-
-
-    end;
-    ToggleLobby = function(state, action)
-        local newState = copy(state)
-
-        newState.Lobby.currentOpen = action.toggleTo
-
-        return newState
-
-    end,
-
-    
-
+    end
 })

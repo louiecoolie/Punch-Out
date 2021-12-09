@@ -31,20 +31,14 @@ local function mapDispatchToProps(dispatch)
     }
 end
 
-function Hud:init()
-    self.visualizer = roact.createRef()
-end
-
 function Hud:render()
-
     local theme = self.props.theme;
-
-
     -- return component structure to mount in main app
     return roact.createElement("Frame",{
         Size = UDim2.fromScale(1,1),
         BackgroundTransparency = 1,
     },{
+        --create the coin display
         Coins = roact.createElement("Frame",{
             Size = UDim2.fromScale(0.1,0.1);
             Position = UDim2.fromScale(0.01,0.5);
@@ -89,6 +83,7 @@ function Hud:render()
                 }),
             })
         }),
+        --create the power display
         Power = roact.createElement("Frame",{
             Size = UDim2.fromScale(0.1,0.1);
             Position = UDim2.fromScale(0.01,0.39);
@@ -133,6 +128,7 @@ function Hud:render()
                 }),
             })
         }),
+        --create the controls display
         ControlDisplay = roact.createElement("TextButton",{
             Size = UDim2.fromScale(0.1,0.1);
             Position = UDim2.fromScale(0.45,0.9);
@@ -165,15 +161,7 @@ function Hud:render()
     })
 
 end
-
-function Hud:didMount()
-
-end
-
-function Hud:willUnmount()
-
-end
-
+--using roactrodux to connect this part of the ui to state. changes to state will update the ui.
 return roactRodux.connect(mapStateToProps, mapDispatchToProps)(Hud)
 
 

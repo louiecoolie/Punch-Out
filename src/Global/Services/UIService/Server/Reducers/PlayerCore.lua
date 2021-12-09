@@ -11,23 +11,30 @@ local function copy(list)
 	end
 	return copy
 end
-
+--[[
+    Profiles: state that holds all player profiles
+    GameData: state that contains anything needed for the game
+]]--
 return rodux.createReducer({
     Profiles = {};
     GameData = {
         Players = {};
     }
 },{
+    --[[
+        Coins:  action to update profile coin count
+        Power: action to update profile power count and level
+        Profile: action to update profile
+        AddPlayer: action to add player to gamedata
+    ]]--
     Coins = function(state, action)
         local newState = copy(state)
-        
-
+    
         newState.Profiles[action.key].coins = action.value
         
         return newState
     end,
     Power = function(state, action)
-
         local newState = copy(state)
 
         newState.Profiles[action.key].power = action.power
@@ -47,9 +54,5 @@ return rodux.createReducer({
         newState.GameData = copy(state.GameData)
 
         newState.GameData.Players[#newState.GameData.Players+1] = action.player
-
-
     end;
-    
-
 })

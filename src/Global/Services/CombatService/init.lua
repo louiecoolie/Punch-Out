@@ -12,29 +12,31 @@ local combo = require(script.Modules.Combo)
 --class declaration
 local CombatService, get, set = class("CombatService", baseSingleton)
 
+
+-- this function creates a billboard gui that tweens up, it is supplied with damage dealt.
 local function displayDamage(targetChar, damage)
-    local displayPart = Instance.new("Part")
+    local displayPart = Instance.new("Part") -- create part container for billboard.
     displayPart.Anchored = true
     displayPart.Position = targetChar + Vector3.new(0,2,0)
     displayPart.Transparency = 1
-    local billboard = Instance.new("BillboardGui")
+    local billboard = Instance.new("BillboardGui") --create billboard to parent to part container
     billboard.Parent = displayPart
     billboard.Size = UDim2.fromOffset(100,100)
-    local scoreText = Instance.new("TextLabel", billboard)
+    local scoreText = Instance.new("TextLabel", billboard) -- create the text for billboard
     scoreText.BackgroundTransparency = 1
     scoreText.Size = UDim2.fromScale(1,1)
     scoreText.TextColor3 = Color3.fromRGB(175, 0, 0)
     scoreText.TextScaled = true
     scoreText.Font = Enum.Font.SourceSansBold
     scoreText.Text = "- "..damage
-    displayPart.Parent = workspace
-
-    local goal = {}
+    displayPart.Parent = workspace  -- load into workspace
+    --tween here
+    local goal = {} 
     goal.Position = displayPart.Position + Vector3.new(0,3,0)
     local tweenInfo = TweenInfo.new(1)
     local tween = TweenService:Create(displayPart, tweenInfo, goal)
     tween:Play()
-    Debris:AddItem(displayPart, 1)
+    Debris:AddItem(displayPart, 1) --clean up item after a second
 
 end
 
@@ -45,28 +47,29 @@ function CombatService.__initSingleton(prototype) -- class initilaization
         self._initiateAttack = Instance.new("RemoteEvent", script) -- creating an event to send attacks
         self._initiateAttack.Name = "InitiateAttack"
         self._damageMap = {} -- holds the power each player has for damage calculations
-        self._binding = ReplicatedStorage.Events.Binding -- creating binding that commnicates to other scripts
-        self._bindingFunction = ReplicatedStorage.Events.BindingFunction
+        self._binding = ReplicatedStorage.Events.Binding -- creating binding that commnicates data to other scripts
+        self._bindingFunction = ReplicatedStorage.Events.BindingFunction -- used to pull data from other scripts
         self._initiateAttack.OnServerEvent:Connect(function(plr)
             if not self._damageMap[plr.Name] then -- if the damage isn't already mapped then get pull from state
-                local data = self._bindingFunction:Invoke(plr)
-                self._damageMap[plr.Name] = data.power
+                local data = self._bindingFunction:Invoke(plr) -- will send a request and the responsible script will return value
+                self._damageMap[plr.Name] = data.power -- save that value so that we don't make too many binding event calls for simple combat
             end 
-            task.spawn(function()
+            --create a thread for the collision detection
+            task.spawn(function() 
                 local collider = Instance.new("Part") --create a collider part to get collision
                 collider.Size = Vector3.new(5,5,2)
                 collider.Transparency = 1
-                collider.CFrame = plr.Character.PrimaryPart.CFrame*CFrame.new(0,0,-1)
+                collider.CFrame = plr.Character.PrimaryPart.CFrame*CFrame.new(0,0,-1) -- sets to in front of player
                 collider.Parent = workspace
 
-                local parts = collider:GetTouchingParts()
-                collider:Destroy()
-                local humanoid
+                local parts = collider:GetTouchingParts() -- get the collision
+                collider:Destroy() -- destroy colllider as it is no longer needed
+                local humanoid -- holding variable for getting humanoid of enemy
                 for _, part in pairs(parts) do
                     if part.Parent and part.Parent:FindFirstChild("Humanoid") then
-                        if part.Parent == plr.Character then
+                        if part.Parent == plr.Character then -- we don't want the player to hit themselves
                             continue
-                        else
+                        else -- if not the player then we found an eligible humanoid.
                             humanoid = part.Parent.Humanoid
                             break
                         end
@@ -90,12 +93,12 @@ function CombatService.__initSingleton(prototype) -- class initilaization
                     animation.AnimationId = "rbxassetid://8206374727"
                     local animator = humanoid:FindFirstChildOfClass("Animator")
                     if animator then
-                        local animationTrack = animator:LoadAnimation(animation)
+                        local animationTrack = animator:LoadAnimation(animation) -- load the animation
                         animationTrack:Play()
                     end
-                    humanoid:TakeDamage(self._damageMap[plr.Name])
-                    displayDamage(humanoid.Parent.PrimaryPart.Position, self._damageMap[plr.Name])
-                    if humanoid.Health <= 0 then
+                    humanoid:TakeDamage(self._damageMap[plr.Name]) -- call damage on the humanoid
+                    displayDamage(humanoid.Parent.PrimaryPart.Position, self._damageMap[plr.Name]) -- display the hit damage as gui
+                    if humanoid.Health <= 0 then -- if the humanoid is dead, credit the player the score.
                         self._binding:Fire({
                             type = "kill";
                             player = plr;
@@ -110,7 +113,7 @@ function CombatService.__initSingleton(prototype) -- class initilaization
 
         self._binding.Event:Connect(function(data)
             if data.type == "upgrade" then -- update damage map if player upgrades
-                self._damageMap[data.player] = data.upgrade
+                self._damageMap[data.player] = data.upgrade --store updated damage into cache
             end
         
         end)
@@ -119,7 +122,7 @@ function CombatService.__initSingleton(prototype) -- class initilaization
         self._comboCount = 0 -- creating combo count variable to count combos
         self._lastCombo = tick() -- will be used to determine combo used
         self._player = Players.LocalPlayer -- making a reference to the player object as that is always available.
-        self._initiateAttack = script.InitiateAttack
+        self._initiateAttack = script.InitiateAttack -- get the remote event used for this service to communicate between server-client
         self._initialized = true
 
         
@@ -127,7 +130,7 @@ function CombatService.__initSingleton(prototype) -- class initilaization
 
     return self
 end
-
+--responsible for animating the attack and calling server to calculate collision and damage
 function CombatService:Attack()
     --tick combo count
     self._comboCount += 1

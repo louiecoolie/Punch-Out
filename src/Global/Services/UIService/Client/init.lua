@@ -1,3 +1,5 @@
+--This script is used to support the addition of multiple state reducers.
+
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 --modules
