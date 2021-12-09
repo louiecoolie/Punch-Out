@@ -74,7 +74,7 @@ function BaseApp:render()
     },{
         BaseApp = roact.createElement("ScreenGui", {
             IgnoreGuiInset = true;
-            ResetOnSpawn = true;
+            ResetOnSpawn = false;
             DisplayOrder = 10;
         }, { -- children
             Hud = hud;

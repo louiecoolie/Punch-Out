@@ -151,6 +151,7 @@ function UIService.__initSingleton(prototype) -- class initilaization
         end)
 
         ProximityPromptService.PromptTriggered:Connect(function(prompt, player)
+       
             self._dispatchClient:FireClient(player, {
                 type = "Shop"
             })
@@ -203,7 +204,7 @@ function UIService.__initSingleton(prototype) -- class initilaization
 
 
         self._dispatchClient.OnClientEvent:Connect(function(data)
-   
+      
             self._clientStore:dispatch(data)
         
         end)

@@ -29,15 +29,10 @@
     },
     "StarterPlayer": {
       "$className": "StarterPlayer",
-      "StarterCharacterScripts": {
-        "$className": "StarterCharacterScripts",
-        "$ignoreUnknownInstances": true,
-        "$path": "src/Client"
-      },
       "StarterPlayerScripts": {
         "$className": "StarterPlayerScripts",
         "$ignoreUnknownInstances": true,
-        "$path": "src/StarterPlayer/StarterPlayerScripts"
+        "$path": "src/Client"
       },
       "$ignoreUnknownInstances": true
     },

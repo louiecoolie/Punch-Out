@@ -17,3 +17,4 @@ connections["InputBegan"] = UserInputService.InputBegan:Connect(function(input)
         CombatService:Attack()
     end
 end)
+
