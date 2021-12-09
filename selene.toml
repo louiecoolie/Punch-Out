@@ -1,0 +1,7 @@
+std = "roblox"
+
+[rules]
+multiple_statements = "allow"
+undefined_variable = "allow"
+unused_variable = "allow"
+parenthese_conditions = "allow"
