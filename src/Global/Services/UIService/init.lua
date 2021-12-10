@@ -159,13 +159,13 @@ function UIService.__initSingleton(prototype) -- class initilaization
             self._dispatchClient:FireClient(player, {
                 type = "Shop"
             })
-        
         end)
         --function that returns server state to requesting server side services
         ReplicatedStorage.Events:WaitForChild("BindingFunction").OnInvoke = function(player)
             local state = self._serverStore:getState() 
             return state.Server.Profiles[player.Name]
         end
+        --setup the binding connection that receives communications from other services
         self._binding.Event:Connect(function(data)
             if data.type == "kill" then -- if received kill type from a service we should reward the kill
                 local state = self._serverStore:getState() -- pull state 
@@ -204,7 +204,7 @@ function UIService.__initSingleton(prototype) -- class initilaization
         self._clientApp = roact.createElement(roactRodux.StoreProvider, {
             store = self._clientStore
         }, {
-            App = roact.createElement(require(script.BaseApp),{
+            App = roact.createElement(require(baseApp),{
                 serverDispatch = self._updateServer
             })
         })
@@ -228,7 +228,6 @@ end
 function UIService:DispatchToClient(player, dispatch)
     self._remoteEvent:FireClient(player, dispatch)
 end
-
 -- client methods
 --launches ui to playergui
 function UIService:LoadApp(playerGui)

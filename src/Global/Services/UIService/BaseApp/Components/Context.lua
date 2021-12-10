@@ -3,13 +3,8 @@
 -- used for theme
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
 --modules
 local util = ReplicatedStorage.Vendor
-
-
-
-
 -- get roact/rodux
 local roact = require(util:WaitForChild("Roact"))
 local roactRodux = require(util:WaitForChild("Roact-Rodux"))
@@ -69,7 +64,6 @@ local function with(callback)
 		render = callback,
 	})
 end
-
 
 return {
 	Provider = roactRodux.connect(mapStateToProps, mapDispatchToProps)(loadoutContextWrapper),

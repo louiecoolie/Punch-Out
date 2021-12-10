@@ -8,9 +8,6 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local util = ReplicatedStorage.Vendor
 local roactRodux = require(util:WaitForChild("Roact-Rodux"))
 local roact = require(util:WaitForChild("Roact"))
---animation modules
-local flipper = require(util:WaitForChild("Flipper"))
-local spring = flipper.Spring
 --components
 local components = script.Components
 local context = require(components:FindFirstChild("Context")) --responsible for theme
@@ -20,9 +17,7 @@ local gameShop = require(components:FindFirstChild("Shop")) -- responsible for s
 local BaseApp = roact.Component:extend("BaseApp")
 
 -- rodux methods
-
 local function mapStateToProps(state)
-
     return {
         themeType = state.playerHandler.Theme.Current;
     }
@@ -30,27 +25,7 @@ end
 
 local function mapDispatchToProps(dispatch)
     return {
-
     }
-end
-
-
-
-local TWEEN_IN_SPRING = {
-    frequency = 5,
-    dampingRatio = 1
-}
-
-function BaseApp:init()
-    --setting placeholder parameters for the animation library to create a motor which is used for animations.
-	self.motor = flipper.SingleMotor.new(0)
-
-	local binding, setBinding = roact.createBinding(self.motor:getValue())
-	self.binding = binding
-
-	self.motor:onStep(setBinding)
-
-
 end
 
 function BaseApp:render()
@@ -82,15 +57,5 @@ function BaseApp:render()
         })
     })
 end
-
-function BaseApp:didMount()
-
-
-end
-
-function BaseApp:willUnmount()
-   
-end
-
 --roactrodux will connect the app to state for updates.
 return roactRodux.connect(mapStateToProps, mapDispatchToProps)(BaseApp)
